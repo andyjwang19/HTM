@@ -46,15 +46,12 @@ class column(object):
         self.distal_weights=[]
 
         #Each cell contains the coordinates of the column that sent the distal signal
-        #cells contain the following: [ [[x,y], epoch] , ...]
-        #should have used a dictionary or another object but thats too much work
-        self.cells = [[[]] for x in range(0, total_cells)]
+        self.cells = [[] for x in range(0, total_cells)]
 
 
 
-        #generates distal connections and their weights
+
         for c in range(0,number_of_distal):
-            #randint is inclusive, net_width is the length but arrays start at 0, so -1
             self.distal.append([random.randint(0,net_width-1), random.randint(0,net_height-1)])
             #Not normal distribution... genconnnections is...
             self.distal_weights.append(0.5)
@@ -66,10 +63,8 @@ class column(object):
         #has to be even
         self.connections = np.random.choice(index_vector, number_of_connections, False)
         for i in range(0, number_of_connections):
-            if i %2 ==0:
-                self.weights.append(np.random.uniform(0,0.1))
-            else:
-                self.weights.append(np.random.uniform(0.1,1))
+            self.weights.append(np.random.uniform(0,1))
+            #self.weights.append(np.random.uniform(0.1,1))
     #   return self.connections, self.weights
 
     def calculateValue(self, input_vector):
@@ -83,14 +78,10 @@ class column(object):
 
 #    def genDistal(self):
 
-    def activateCells(self,x,y, epoch):
+    def activateCells(self,x,y):
         for b in range(0, len(self.cells)):
-            if self.cells[b] == [[]]:
-                self.cells[b] =[[x,y], epoch]
-                break
-            if self.cells[b][1] - epoch > 1:
-                self.cells[b]= [[x, y], epoch]
-                break
+            if self.cells[b] == []:
+                self.cells[b] =[x,y]
 
 
     def distalSignal(self):
@@ -109,14 +100,10 @@ class column(object):
         #update weights for lateral connects
         #cells contain the coordinates of sending column if predicted
         for cell in self.cells:
-            if cell == [[]]:
-                continue
-            print(cell)
-            if cell[1] - epoch > 1:
-                cell = [[]]
-            else:
-                print(self.x,self.y)
-                net[cell[0][0]][cell[0][1]].updateDistal(self.x,self.y)
+            if cell == []:
+                break
+            print(self.x,self.y)
+            net[cell[0]][cell[1]].updateDistal(self.x,self.y)
 
         #print(str(self.x), str(self.y))
 
@@ -137,7 +124,7 @@ class column(object):
                 print(str(len(net)), str(len(net[0])))
                 print(self.distal[f][0])
                 print(self.distal[f][1])
-                net[self.distal[f][0]][self.distal[f][1]].activateCells(self.x,self.y, epoch)
+                net[self.distal[f][0]][self.distal[f][1]].activateCells(self.x,self.y)
 
 
 
